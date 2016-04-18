@@ -1,4 +1,4 @@
-import Gfx exposing (rndShape, canvas, rings)
+import Gfx exposing (canvas, rings)
 import Task
 import Random
 import Signal
