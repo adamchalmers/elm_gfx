@@ -61,6 +61,18 @@ rndColor seed =
       Just col ->
         (col, newSeed)
 
+genColor : Random.Generator Color.Color
+genColor = 
+  let
+    n = (Array.length choices) - 1
+    color = \i -> Array.get i choices |> Maybe.withDefault Color.black 
+  in
+    Random.map color (Random.int 0 n)
+
+
+genShape : Random.Generator Collage.Form
+genShape = Random.map3 genShapeMapper genColor (Random.int 3 8) (Random.int 10 80)
+genShapeMapper color sides size = Collage.filled color (Collage.ngon sides (toFloat size))
 
 -- fourfold duplicates the shape four times.
 fourfold : Collage.Form -> Float -> Float -> Collage.Form

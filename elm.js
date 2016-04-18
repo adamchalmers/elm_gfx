@@ -6773,6 +6773,7 @@ Elm.Gfx.make = function (_elm) {
                                       ,A2($Graphics$Collage.move,{ctor: "_Tuple2",_0: size,_1: 0},shape)
                                       ,A2($Graphics$Collage.move,{ctor: "_Tuple2",_0: 0 - size,_1: 0},shape)])));
    });
+   var fn = F3(function (color,sides,size) {    return A2($Graphics$Collage.filled,color,A2($Graphics$Collage.ngon,sides,$Basics.toFloat(size)));});
    var choices = $Array.fromList(_U.list([$Color.red,$Color.green,$Color.green,$Color.blue,$Color.purple,$Color.orange]));
    var rndColor = function (seed) {
       var n = $Array.length(choices) - 1;
@@ -6787,6 +6788,12 @@ Elm.Gfx.make = function (_elm) {
             return {ctor: "_Tuple2",_0: _p1._0,_1: newSeed};
          }
    };
+   var genColor = function () {
+      var color = function (i) {    return A2($Maybe.withDefault,$Color.black,A2($Array.get,i,choices));};
+      var n = $Array.length(choices) - 1;
+      return A2($Random.map,color,A2($Random.$int,0,n));
+   }();
+   var genShape = function () {    var rInt = $Random.$int;return A4($Random.map3,fn,genColor,A2(rInt,3,8),A2(rInt,10,80));}();
    var rndShape = F2(function (seed,dist) {
       var rInt = $Random.$int;
       var _p2 = A2($Random.generate,A2(rInt,101,201),seed);
@@ -6829,6 +6836,9 @@ Elm.Gfx.make = function (_elm) {
                             ,rndShape: rndShape
                             ,choices: choices
                             ,rndColor: rndColor
+                            ,genColor: genColor
+                            ,genShape: genShape
+                            ,fn: fn
                             ,fourfold: fourfold
                             ,log: log};
 };
