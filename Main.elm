@@ -3,12 +3,16 @@ import Task
 import Random
 import Signal
 import Mouse
-import Graphics.Element exposing (show)
+import Graphics.Element exposing (show, Element)
+import Time
 
-seedToPic n = 
-  canvas [rings (Random.initialSeed n) |> fst]
+-- Map signal updates to graphics
+seedToPic : (Int, Time.Time) -> Element
+seedToPic (mx, t) = 
+  let 
+    (elem, s0) = rings (Random.initialSeed mx) t
+  in
+    canvas [elem]
 
-fst (a,b) = a
-snd (a,b) = b
-
-main = Signal.map2 (+) Mouse.x Mouse.y |> Signal.map seedToPic
+-- Combine the mouse and time signals into a tuple, map the tuple to a graphic
+main = Signal.map2 (,) Mouse.x (Time.every Time.millisecond) |> Signal.map seedToPic

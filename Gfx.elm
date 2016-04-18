@@ -5,6 +5,7 @@ import Graphics.Element exposing (Element)
 import Graphics.Collage as C
 import Array
 import Random
+import Time
 import Debug
 
 canvas : List C.Form -> Element
@@ -16,26 +17,27 @@ canvas =
 
 
 -- Draws concentric circles of random shapes
-rings : Random.Seed -> (C.Form, Random.Seed)
-rings seed = 
+rings : Random.Seed -> Time.Time -> (C.Form, Random.Seed)
+rings seed t = 
   let
     (_, s0) = Random.generate (Random.int 101 201) seed
-    (ring1, s1) = ring s0 250
-    (ring2, s2) = ring s1 150
+    (ring1, s1) = ring s0 250 t
+    (ring2, s2) = ring s1 150 t
   in
     (C.group [ring1, ring2], s2)
 
 
 -- Draws a circle of identical randomly-chosen shapes $dist from the origin
-ring : Random.Seed -> Int -> (C.Form, Random.Seed)
-ring seed dist = 
+ring : Random.Seed -> Int -> Time.Time -> (C.Form, Random.Seed)
+ring seed dist t = 
   let
     (_, s0) = Random.generate (Random.int 0 0) seed
     (shape, s1) = Random.generate genShape s0
     (dist, s2) = Random.generate (Random.int (dist-50) (dist+50)) s1
     (angle, s3) = Random.generate (Random.int 0 90) s2
+    rotation = ((toFloat angle) + (Time.inMilliseconds t)/100)
   in
-    (fourfold shape (toFloat dist) (toFloat angle), s3)
+    (fourfold shape (toFloat dist) rotation, s3)
 
 
 genColor : Random.Generator Color.Color
