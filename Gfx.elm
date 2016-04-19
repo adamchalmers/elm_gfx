@@ -11,7 +11,7 @@ import Debug
 canvas : List C.Form -> Element
 canvas = 
   let 
-    width = 600
+    width = 800
   in
     C.collage width width
 
@@ -21,18 +21,19 @@ rings : Random.Seed -> Time.Time -> (C.Form, Random.Seed)
 rings seed t = 
   let
     (_, s0) = Random.generate (Random.int 101 201) seed
-    (ring1, s1) = ring s0 250 t
-    (ring2, s2) = ring s1 150 t
+    ((col1, col2), s1) = Random.generate genColor2 s0
+    (ring1, s2) = ring s1 250 t col1
+    (ring2, s3) = ring s2 150 t col2
   in
-    (C.group [ring1, ring2], s2)
+    (C.group [ring1, ring2], s3)
 
 
 -- Draws a circle of identical randomly-chosen shapes $dist from the origin
-ring : Random.Seed -> Int -> Time.Time -> (C.Form, Random.Seed)
-ring seed dist t = 
+ring : Random.Seed -> Int -> Time.Time -> Color.Color -> (C.Form, Random.Seed)
+ring seed dist t col = 
   let
     (_, s0) = Random.generate (Random.int 0 0) seed
-    (shape, s1) = Random.generate genShape s0
+    (shape, s1) = Random.generate (genShape col) s0
     (dist, s2) = Random.generate (Random.int (dist-50) (dist+50)) s1
     (angle, s3) = Random.generate (Random.int 0 90) s2
     rotation = ((toFloat angle) + (Time.inMilliseconds t)/100)
@@ -40,29 +41,28 @@ ring seed dist t =
     (fourfold shape (toFloat dist) rotation, s3)
 
 
-genColor : Random.Generator Color.Color
-genColor = 
+genColor2 : Random.Generator (Color.Color, Color.Color)
+genColor2 = 
   let
     n = (Array.length choices) - 1
-    color = \i -> Array.get i choices |> Maybe.withDefault Color.black
+    color = \i -> Array.get i choices |> Maybe.withDefault (Color.black, Color.black)
     choices = Array.fromList
-      [ Color.red
-      , Color.green
-      , Color.green
-      , Color.blue
-      , Color.purple
-      , Color.orange
+      [ (Color.red, Color.orange)
+      , (Color.green, Color.blue)
+      , (Color.blue, Color.purple)
+      , (Color.purple, Color.green)
+      , (Color.orange, Color.blue)
       ]
   in
     Random.map color (Random.int 0 n)
 
 
-genShape : Random.Generator C.Form
-genShape = 
+genShape : Color.Color -> Random.Generator C.Form
+genShape col = 
   let
-    map = \color sides size -> C.filled color (C.ngon sides (toFloat size))
+    map = \sides size -> C.filled col (C.ngon sides (toFloat size))
   in
-    Random.map3 map genColor (Random.int 3 8) (Random.int 10 80)
+    Random.map2 map (Random.int 3 8) (Random.int 10 80)
 
 
 -- fourfold duplicates the shape four times.

@@ -15,4 +15,9 @@ seedToPic (mx, t) =
     canvas [elem]
 
 -- Combine the mouse and time signals into a tuple, map the tuple to a graphic
-main = Signal.map2 (,) Mouse.x (Time.every Time.millisecond) |> Signal.map seedToPic
+main = 
+  Signal.map2 
+    (,) 
+    Mouse.x
+    (Time.every Time.millisecond ) 
+  |> Signal.map seedToPic

@@ -1,0 +1,24 @@
+<html>
+
+  <head>
+    <title>Elm kaleidoscope!</title>
+    <script type="text/javascript" src="elm.js"></script>
+    <style>
+      body {
+        font-family: sans-serif;
+      }
+    </style>
+  </head>
+
+  <body>
+    <h1>Elm Kaleidoscope</h1>
+    <div id="stamper"></div>
+    <span>Move mouse to change the graphics. <a href="github.com/adamchalmers/elm_gfx">(source here)</a></span>
+  </body>
+
+  <script type="text/javascript">
+    var stamperDiv = document.getElementById('stamper');
+    Elm.embed(Elm.Main, stamperDiv);
+  </script>
+
+</html>
